@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kazenoverse | Gaming Network Elite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Sembunyikan kursor bawaan di seluruh elemen */
+        * {
+            cursor: none !important;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030205;
+            color: #ffffff;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* Custom Cursor Elements */
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #a855f7;
+            position: fixed;
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            transition: transform 0.1s ease-out;
+            box-shadow: 0 0 10px #a855f7;
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(168, 85, 247, 0.5);
+            position: fixed;
+            border-radius: 50%;
+            z-index: 9998;
+            pointer-events: none;
+            transition: transform 0.15s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+        }
+
+        /* Hover State for Cursor */
+        .cursor-hover .cursor-outline {
+            width: 60px;
+            height: 60px;
+            border-color: #a855f7;
+            background-color: rgba(168, 85, 247, 0.1);
+        }
+        
+        .cursor-hover .cursor-dot {
+            transform: scale(1.5);
+        }
+
+        /* Premium Glow Effects - Purple Theme */
+        .glow-text-purple {
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.6), 0 0 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .premium-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .premium-card:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            transform: translateY(-8px);
+            background: rgba(168, 85, 247, 0.03);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #a855f7;
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Animated Particles */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 10%, #1a0b2e 0%, #030205 100%);
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: moveStar linear infinite;
+        }
+
+        @keyframes moveStar {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100vh); }
+        }
+
+        /* Toast Message */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background: #0f0a1a;
+            color: #fff;
+            text-align: center;
+            border-radius: 12px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 40px;
+            transform: translateX(-50%);
+            border: 1px solid #a855f7;
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: slideUp 0.5s, slideDown 0.5s 2.5s;
+        }
+
+        @keyframes slideUp { from { bottom: 0; opacity: 0; } to { bottom: 40px; opacity: 1; } }
+        @keyframes slideDown { from { bottom: 40px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+
+        /* Sembunyikan custom cursor di layar sentuh */
+        @media (hover: none) and (pointer: coarse) {
+            .cursor-dot, .cursor-outline {
+                display: none;
+            }
+            * {
+                cursor: auto !important;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Custom Cursor Elements -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-outline" id="cursorOutline"></div>
+
+    <div class="stars-container" id="starField"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 px-6 py-6 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center bg-black/60 backdrop-blur-xl rounded-2xl px-8 py-4 border border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(147,51,234,0.4)]">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                </div>
+                <span class="text-xl font-extrabold uppercase tracking-tighter">Kazeno<span class="text-purple-500">Network</span></span>
+            </div>
+            
+            <div class="hidden lg:flex items-center gap-10 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+                <a href="#" class="nav-link text-white">Home</a>
+                <a href="#updates" class="nav-link hover:text-white">Updates</a>
+                <a href="#servers" class="nav-link hover:text-white">Servers</a>
+                <a href="#staff" class="nav-link hover:text-white">Staff</a>
+                <a href="#" class="nav-link hover:text-white text-purple-400">Store</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button class="bg-white/5 p-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 transition-all">
+                    <svg class="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 100-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z" /></svg>
+                </button>
+                <a href="https://discord.gg" target="_blank" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-black rounded-lg transition-all uppercase tracking-widest shadow-lg shadow-purple-600/20">
+                    Join Discord
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px] -z-10"></div>
+        
+        <div class="mb-6 flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-2 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse shadow-[0_0_10px_#a855f7]"></span>
+            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Join <span class="text-white">1,240</span> Players Online</span>
+        </div>
+
+        <h1 class="text-7xl md:text-[120px] font-black mb-4 tracking-tighter uppercase leading-none">
+            INFINITE<br><span class="text-purple-500 glow-text-purple italic">REALMS.</span>
+        </h1>
+
+        <p class="max-w-xl text-gray-400 text-sm md:text-base mb-10 font-medium tracking-wide">
+            Jelajahi ekosistem gaming tercanggih dengan latensi rendah dan fitur kustom yang belum pernah Anda rasakan sebelumnya.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4 bg-[#0a0612] p-2 rounded-2xl border border-white/5 shadow-2xl">
+            <div class="px-8 py-3 font-mono font-bold text-purple-400 text-lg">play.kazenoverse.com</div>
+            <button onclick="copyIP()" class="w-full sm:w-auto px-10 py-4 bg-purple-600 hover:bg-purple-500 text-white font-black rounded-xl transition-all uppercase text-xs tracking-widest">
+                Copy Address
+            </button>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="py-10 border-y border-white/5 bg-black/20">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="text-3xl font-black text-purple-500">12k+</div>
+                <div class="text-[10px] uppercase font-bold text-gray-500 tracking-widest mt-1">Unique Users</div>
+            </div>
+            <div class="text-center border-l border-white/5">
+                <div class="text-3xl font-black text-white">99.9%</div>
+                <div class="text-[10px] uppercase font-bold text-gray-500 tracking-widest mt-1">Uptime Rate</div>
+            </div>
+            <div class="text-center border-l border-white/5">
+                <div class="text-3xl font-black text-white">24/7</div>
+                <div class="text-[10px] uppercase font-bold text-gray-500 tracking-widest mt-1">Staff Support</div>
+            </div>
+            <div class="text-center border-l border-white/5">
+                <div class="text-3xl font-black text-purple-500">50+</div>
+                <div class="text-[10px] uppercase font-bold text-gray-500 tracking-widest mt-1">Custom Plugins</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Updates Section -->
+    <section id="updates" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-4xl font-black uppercase tracking-tighter italic">Latest <span class="text-purple-500">Updates</span></h2>
+                    <p class="text-gray-500 mt-2">Kabar terbaru dari pengembangan dimensi Kazeno.</p>
+                </div>
+                <a href="#" class="text-xs font-bold uppercase text-purple-500 border-b border-purple-500/30 pb-1 hover:border-purple-500 transition-all">View All News</a>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Update 1 -->
+                <div class="premium-card rounded-3xl overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-purple-600/20 to-black flex items-center justify-center">
+                        <svg class="w-16 h-16 text-purple-500/50 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-[10px] bg-purple-600 px-2 py-1 rounded font-black uppercase">Major</span>
+                            <span class="text-[10px] text-gray-500 font-bold uppercase">12 Feb 2026</span>
+                        </div>
+                        <h3 class="text-xl font-black mb-3 group-hover:text-purple-400 transition-colors uppercase italic">Astral Season Launch</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Musim baru bertema bintang telah tiba dengan item kosmetik eksklusif dan tantangan harian.</p>
+                    </div>
+                </div>
+
+                <!-- Update 2 -->
+                <div class="premium-card rounded-3xl overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-white/5 to-black flex items-center justify-center">
+                        <svg class="w-16 h-16 text-white/20 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-[10px] bg-white/10 px-2 py-1 rounded font-black uppercase">Patch</span>
+                            <span class="text-[10px] text-gray-500 font-bold uppercase">08 Feb 2026</span>
+                        </div>
+                        <h3 class="text-xl font-black mb-3 group-hover:text-purple-400 transition-colors uppercase italic">Database Optimization</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Migrasi server ke infrastruktur baru telah selesai. Nikmati permainan tanpa lag kapanpun.</p>
+                    </div>
+                </div>
+
+                <!-- Update 3 -->
+                <div class="premium-card rounded-3xl overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-purple-600/20 to-black flex items-center justify-center">
+                        <svg class="w-16 h-16 text-purple-500/50 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-[10px] bg-purple-600 px-2 py-1 rounded font-black uppercase">Event</span>
+                            <span class="text-[10px] text-gray-500 font-bold uppercase">01 Feb 2026</span>
+                        </div>
+                        <h3 class="text-xl font-black mb-3 group-hover:text-purple-400 transition-colors uppercase italic">Grand Tournament</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Daftarkan tim Anda untuk turnamen PvP bulanan dengan total hadiah jutaan Rupiah.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staff Section -->
+    <section id="staff" class="py-32 px-6 bg-white/[0.02]">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-4xl font-black uppercase tracking-tighter italic mb-16">The <span class="text-purple-500">Curators</span></h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-10">
+                <div class="space-y-4 group">
+                    <div class="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-400 p-1 group-hover:rotate-6 transition-transform">
+                        <div class="w-full h-full bg-[#030205] rounded-xl flex items-center justify-center text-3xl font-black">K</div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">Kazeno</h4>
+                        <p class="text-[10px] text-purple-500 font-black uppercase tracking-widest">Mastermind</p>
+                    </div>
+                </div>
+                <div class="space-y-4 group">
+                    <div class="w-24 h-24 mx-auto rounded-2xl bg-white/10 p-1 group-hover:-rotate-6 transition-transform">
+                        <div class="w-full h-full bg-[#030205] rounded-xl flex items-center justify-center text-3xl font-black text-indigo-400">D</div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">Danzz</h4>
+                        <p class="text-[10px] text-indigo-400 font-black uppercase tracking-widest">Architect</p>
+                    </div>
+                </div>
+                <div class="space-y-4 group">
+                    <div class="w-24 h-24 mx-auto rounded-2xl bg-white/10 p-1 group-hover:rotate-6 transition-transform">
+                        <div class="w-full h-full bg-[#030205] rounded-xl flex items-center justify-center text-3xl font-black text-fuchsia-400">R</div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">Rizky</h4>
+                        <p class="text-[10px] text-fuchsia-400 font-black uppercase tracking-widest">Warden</p>
+                    </div>
+                </div>
+                <div class="space-y-4 group">
+                    <div class="w-24 h-24 mx-auto rounded-2xl bg-white/10 p-1 group-hover:-rotate-6 transition-transform">
+                        <div class="w-full h-full bg-[#030205] rounded-xl flex items-center justify-center text-3xl font-black text-gray-400">S</div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold">Sora</h4>
+                        <p class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Sentry</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simple Footer -->
+    <footer class="py-20 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col items-center gap-10">
+            <div class="flex gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
+                <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                <a href="#" class="hover:text-white transition-colors">Terms</a>
+                <a href="#" class="hover:text-white transition-colors">Support</a>
+                <a href="#" class="hover:text-white transition-colors">Wiki</a>
+            </div>
+            <p class="text-gray-600 text-[10px] font-bold uppercase tracking-[0.4em]">
+                &copy; 2026 Kazenoverse Studio • Astral Network
+            </p>
+        </div>
+    </footer>
+
+    <!-- Toast Component -->
+    <div id="toast">Address copied to clipboard!</div>
+
+    <script>
+        // Custom Cursor Logic
+        const dot = document.getElementById('cursorDot');
+        const outline = document.getElementById('cursorOutline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // Update dot position (fast)
+            dot.style.transform = `translate3d(${posX - 4}px, ${posY - 4}px, 0)`;
+            
+            // Update outline position (with slight delay due to CSS transition)
+            outline.style.transform = `translate3d(${posX - 20}px, ${posY - 20}px, 0)`;
+        });
+
+        // Add hover effect for interactive elements
+        const interactives = document.querySelectorAll('a, button, .premium-card');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                document.body.classList.add('cursor-hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                document.body.classList.remove('cursor-hover');
+            });
+        });
+
+        // Generate Star Particles
+        const starField = document.getElementById('starField');
+        const starCount = 80;
+
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 0.5;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.opacity = Math.random() * 0.5 + 0.2;
+            star.style.animationDuration = `${Math.random() * 50 + 50}s`;
+            starField.appendChild(star);
+        }
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.remove('py-6');
+                nav.classList.add('py-3');
+            } else {
+                nav.classList.remove('py-3');
+                nav.classList.add('py-6');
+            }
+        });
+
+        // Copy IP
+        function copyIP() {
+            const ip = "play.kazenoverse.com";
+            const el = document.createElement('textarea');
+            el.value = ip;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const toast = document.getElementById('toast');
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+    </script>
+</body>
+</html>
